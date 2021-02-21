@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>NBA</title>
+		<meta charset="utf-8" />
+		<style>
+			/* global */
+
+            :root {
+                --field-bg-color: darkgreen;
+                --home-bg-color: darkred;
+                --visit-bg-color: red;
+            }
+
+			body {
+				background-color: #000;
+				color: #fff;
+				font-family: verdana, sans-serif;
+				font-size: 12px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100vh;
+				margin: 0;
+			}
+
+            h1 {
+                flex: 0 0 100%;
+                font-size: .8rem;
+                font-weight: normal;
+                color: cyan;
+                text-align: center;
+            }
+
+            
+		</style>  
+
+	</head>
+	<body>
+		<div class="arena">
+            <h1>
+                NBA Finals
+            </h1>
+			<div class="score-board">
+            </div>
+		</div>
+		
+
+		<script type="module">
+			import { el, rand, sleep, qry, qryAll, log, sortDesc, renderColorText } from '../lib/lib.js';
+            const data = [];
+		
+			(function(data) {
+				function events() {
+                    document.addEventListener('keydown', (e) => {
+                        const key = e.keyCode;
+
+                        if (key === 78) {
+                        }
+                    }, true);
+				}
+			
+				function init() {
+					events();
+				}
+				
+				return {
+					init
+				};
+			})(data).init();
+		</script>
+	</body>
+</html>
