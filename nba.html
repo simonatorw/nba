@@ -6,11 +6,11 @@
 		<style>
 			/* global */
 
-            :root {
-                --field-bg-color: darkgreen;
-                --home-bg-color: darkred;
-                --visit-bg-color: red;
-            }
+      :root {
+        --field-bg-color: orange;
+        --home-color: gold;
+        --visit-color: lightgrey;
+      }
 
 			body {
 				background-color: #000;
@@ -24,44 +24,198 @@
 				margin: 0;
 			}
 
-            h1 {
-                flex: 0 0 100%;
-                font-size: .8rem;
-                font-weight: normal;
-                color: cyan;
-                text-align: center;
-            }
+      h1 {
+        flex: 0 0 100%;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+        margin: 6px 0;
+      }
 
-            
+      .score-board {
+				border: 1px solid #333;
+        background-color: #000;
+				width: 220px;
+				display: flex;
+			}
+
+			.score {
+				flex: 1;
+				padding: 10px;
+				color: cyan;
+				font-size: 2rem;
+			}
+
+			.score:last-child {
+				text-align: right;
+			}
+
+			.home {
+				color: var(--home-color);
+				font-size: .7rem;
+			}
+
+      .visitor {
+				color: var(--visit-color);
+				font-size: .7rem;
+			}
+
+      #stats {
+        width: 220px;
+        display: flex;
+        font-size: .6rem;
+        margin-top: 10px;
+        position: relative;
+        color: #666;
+      }
+
+      .stats-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        flex: 1;
+      }
+
+      .stats-list:last-child {
+        position: absolute;
+        right: 0;
+      }
+
+      .player-score {
+        color: #999;
+      }
 		</style>  
 
 	</head>
 	<body>
 		<div class="arena">
-            <h1>
-                NBA Finals
-            </h1>
+      <h1>NBA Finals</h1>
 			<div class="score-board">
-            </div>
+				<div class="score">
+					<div id="home">101</div>
+					<div class="home">LA Lakers</div>
+				</div>
+				<div class="score">
+					<div id="visitor">99</div>
+					<div class="visitor">Bklyn Nets</div>
+				</div>
+      </div>
+      <div id="stats"></div>
 		</div>
 		
 
 		<script type="module">
 			import { el, rand, sleep, qry, qryAll, log, sortDesc, renderColorText } from '../lib/lib.js';
-            const data = [];
+      const data = {
+        home: [
+          { name: 'LeBron James', shot: 10, type: 7, position: 'Shooting Guard', total: 0 },
+          { name: 'Anthony Davis', shot: 9, type: 8, position: 'Power Forward', total: 0 },
+          { name: 'Dennis Schroder', shot: 6, type: 5, position: 'Point Guard', total: 0 },
+          { name: 'Kyle Kuzma', shot: 7, type: 5, position: 'Small Forward', total: 0 },
+          { name: 'Marc Gasol', shot: 6, type: 3, position: 'Center', total: 0 }
+        ],
+        visitor: [
+          { name: 'Kyrie Irving', shot: 7, type: 6, position: 'Shooting Guard', total: 0 },
+          { name: 'Joe Harris', shot: 5, type: 5, position: 'Power Forward', total: 0 },
+          { name: 'James Harden', shot: 9, type: 9, position: 'Point Guard', total: 0 },
+          { name: 'Kevin Durant', shot: 10, type: 10, position: 'Small Forward', total: 0 },
+          { name: 'DeAndre Jordan', shot: 6, type: 3, position: 'Center', total: 0 }
+        ]
+      };
 		
 			(function(data) {
-				function events() {
-                    document.addEventListener('keydown', (e) => {
-                        const key = e.keyCode;
+        let home = 0;
+        let visitor = 0;
 
-                        if (key === 78) {
-                        }
-                    }, true);
+        function loop() {
+          let time = 0;
+          let teamIndex = 0;
+          const intv = setInterval(() => {
+            if (time > 60) {
+              clearInterval(intv);
+            } else {
+              if (teamIndex >= data.home.length) {
+                teamIndex = 0;
+              }
+
+              const homeScore = play('home', teamIndex);
+              const visitorScore = play('visitor', teamIndex);
+
+              home = home + homeScore;
+              visitor = visitor + visitorScore;
+              data.home[teamIndex].total = data.home[teamIndex].total + homeScore;
+              data.visitor[teamIndex].total = data.visitor[teamIndex].total + visitorScore;
+
+              renderScore('home', home);
+              renderScore('visitor', visitor);
+              renderStats();
+
+              time++;
+              teamIndex++;
+            }
+          });
+        }
+
+        function play(team, index) {
+          const obj = data[team][index];
+          const result = rand(0, 10);
+
+          if (result < obj.shot) {
+            const resultType = rand(0, 10);
+
+            if (resultType < obj.type) {
+              return 3;
+            } else {
+              return 2;
+            }
+          } else {
+            return 0;
+          }
+        }
+
+        function reset() {
+          home = 0;
+          visitor = 0;
+
+          for (let i = 0; i < data.home.length; i++) {
+            data.home[i].total = 0;
+            data.visitor[i].total = 0;
+          }
+        }
+
+        function renderScore(id, score) {
+          el(id).insert(score);
+        }
+
+        function renderStats() {
+          let str = '<ul class="stats-list">';
+          let str2 = '<ul class="stats-list">';
+
+          for (let i = 0; i < data.home.length; i++) {
+            str = `${str}<li>${data.home[i].name}: <span class="player-score">${data.home[i].total}</span></li>`;
+            str2 = `${str2}<li>${data.visitor[i].name}: <span class="player-score">${data.visitor[i].total}</span></li>`;
+          }
+
+          str = `${str}</ul>`;
+          str2 = `${str2}</ul>`;
+
+          el('stats').insert(str + str2);
+        }
+
+				function events() {
+          document.addEventListener('keydown', (e) => {
+            const key = e.keyCode;
+
+            if (key === 78) {
+              reset();
+              loop();
+            }
+        }, true);
 				}
 			
 				function init() {
 					events();
+          loop();
 				}
 				
 				return {
