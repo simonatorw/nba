@@ -37,6 +37,7 @@
         background-color: #000;
 				width: 220px;
 				display: flex;
+        flex-wrap: wrap;
 			}
 
 			.score {
@@ -45,6 +46,15 @@
 				color: cyan;
 				font-size: 2rem;
 			}
+
+      #ot {
+        flex: 1 1 100%;
+        padding: 10px 10px 0 0;
+        text-align: right;
+        font-size: .6rem;
+        margin-bottom: -10px;
+        height: 12px;
+      }
 
 			.score:last-child {
 				text-align: right;
@@ -91,6 +101,7 @@
 		<div class="arena">
       <h1>NBA Finals</h1>
 			<div class="score-board">
+        <div id="ot">OT</div>
 				<div class="score">
 					<div id="home">101</div>
 					<div class="home">LA Lakers</div>
@@ -126,14 +137,22 @@
 			(function(data) {
         let home = 0;
         let visitor = 0;
+        let totalTime = 60;
+        let ot = 0;
 
         function loop() {
           let time = 0;
           let teamIndex = 0;
           const intv = setInterval(() => {
-            if (time > 60) {
+            if (time > totalTime && home !== visitor) {
               clearInterval(intv);
             } else {
+              if (time > totalTime && home === visitor) {
+                totalTime = totalTime + 5;
+                ot++;
+                renderOt(ot);
+              }
+
               if (teamIndex >= data.home.length) {
                 teamIndex = 0;
               }
@@ -176,15 +195,22 @@
         function reset() {
           home = 0;
           visitor = 0;
+          ot = 0;
 
           for (let i = 0; i < data.home.length; i++) {
             data.home[i].total = 0;
             data.visitor[i].total = 0;
           }
+
+          renderOt();
         }
 
         function renderScore(id, score) {
           el(id).insert(score);
+        }
+
+        function renderOt(i) {
+          el('ot').insert(i ? i === 1 ? 'OT' : `OT ${i}` : '');
         }
 
         function renderStats() {
