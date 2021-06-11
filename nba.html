@@ -8,7 +8,7 @@
 
       :root {
         --field-bg-color: orange;
-        --home-color: lightblue/*gold*/;
+        --home-color: yellow/*gold*/;
         --visit-color: lightgrey;
       }
 
@@ -35,7 +35,7 @@
       .score-board {
 				border: 1px solid #333;
         background-color: #000;
-				width: 220px;
+				width: 280px;
 				display: flex;
         flex-wrap: wrap;
 			}
@@ -71,7 +71,7 @@
 			}
 
       #stats {
-        width: 220px;
+        width: 280px;
         display: flex;
         font-size: .6rem;
         margin-top: 10px;
@@ -99,16 +99,16 @@
 	</head>
 	<body>
 		<div class="arena">
-      <h1>NBA Finals</h1>
+      <h1 id="mainTitle">NBA Finals</h1>
 			<div class="score-board">
         <div id="ot"></div>
 				<div class="score">
 					<div id="home">101</div>
-					<div class="home">Dallas Mavericks</div>
+					<div id="homeTitle" class="home">Utah Jazz</div>
 				</div>
 				<div class="score">
 					<div id="visitor">99</div>
-					<div class="visitor">Bklyn Nets</div>
+					<div id="visitorTitle" class="visitor">Bklyn Nets</div>
 				</div>
       </div>
       <div id="stats"></div>
@@ -117,35 +117,69 @@
 
 		<script type="module">
 			import { el, rand, sleep, qry, qryAll, log, sortDesc, renderColorText } from '../lib/lib.js';
-      const data = {
-        /*home: [
-          { name: 'LeBron James', shot: 10, type: 7, position: 'Shooting Guard', total: 0 },
-          { name: 'Anthony Davis', shot: 9, type: 8, position: 'Power Forward', total: 0 },
-          { name: 'Dennis Schroder', shot: 6, type: 5, position: 'Point Guard', total: 0 },
-          { name: 'Kyle Kuzma', shot: 7, type: 5, position: 'Small Forward', total: 0 },
-          { name: 'Marc Gasol', shot: 6, type: 3, position: 'Center', total: 0 }
-        ],*/
-        home: [
-          { name: 'Tim Hardaway Jr', shot: 8, type: 9, position: 'Shooting Guard', total: 0 },
-          { name: 'Kristaps Porzingis', shot: 8, type: 8, position: 'Power Forward', total: 0 },
-          { name: 'Luka Doncic', shot: 10, type: 10, position: 'Point Guard', total: 0 },
-          { name: 'Dorain Finney-Smith', shot: 7, type: 8, position: 'Small Forward', total: 0 },
-          { name: 'Boban Marjanovic', shot: 6, type: 3, position: 'Center', total: 0 }
-        ],
-        visitor: [
-          { name: 'Kyrie Irving', shot: 7, type: 6, position: 'Shooting Guard', total: 0 },
-          { name: 'Joe Harris', shot: 5, type: 5, position: 'Power Forward', total: 0 },
-          { name: 'James Harden', shot: 9, type: 9, position: 'Point Guard', total: 0 },
-          { name: 'Kevin Durant', shot: 10, type: 10, position: 'Small Forward', total: 0 },
-          { name: 'DeAndre Jordan', shot: 6, type: 3, position: 'Center', total: 0 }
-        ]
-      };
 		
-			(function(data) {
+			(function() {
+        const teams = {
+          l: {
+            name: 'LA Lakers',
+            color: 'gold',
+            conf: 'w',
+            roster: [
+              { name: 'LeBron James', shot: 10, type: 7, position: 'Shooting Guard', total: 0 },
+              { name: 'Anthony Davis', shot: 9, type: 8, position: 'Power Forward', total: 0 },
+              { name: 'Dennis Schroder', shot: 6, type: 5, position: 'Point Guard', total: 0 },
+              { name: 'Kyle Kuzma', shot: 7, type: 5, position: 'Small Forward', total: 0 },
+              { name: 'Marc Gasol', shot: 6, type: 3, position: 'Center', total: 0 }
+            ]
+          },
+          d: {
+            name: 'Dallas Mavericks',
+            color: 'lightblue',
+            conf: 'w',
+            roster: [
+              { name: 'Tim Hardaway Jr', shot: 8, type: 9, position: 'Shooting Guard', total: 0 },
+              { name: 'Kristaps Porzingis', shot: 8, type: 8, position: 'Power Forward', total: 0 },
+              { name: 'Luka Doncic', shot: 10, type: 10, position: 'Point Guard', total: 0 },
+              { name: 'Dorain Finney-Smith', shot: 7, type: 8, position: 'Small Forward', total: 0 },
+              { name: 'Boban Marjanovic', shot: 6, type: 3, position: 'Center', total: 0 }
+            ]
+          },
+          u: {
+            name: 'Utah Jazz',
+            color: 'yellow',
+            conf: 'w',
+            roster: [
+              { name: 'Joe Ingles', shot: 8, type: 9, position: 'Shooting Guard', total: 0 },
+              { name: 'Mike Conley Jr', shot: 9, type: 10, position: 'Power Forward', total: 0 },
+              { name: 'Donovan Mitchell', shot: 10, type: 10, position: 'Point Guard', total: 0 },
+              { name: 'Bojan Bogdanovic', shot: 9, type: 10, position: 'Small Forward', total: 0 },
+              { name: 'Rudy Gobert', shot: 6, type: 3, position: 'Center', total: 0 }
+            ]
+          },
+          b: {
+            name: 'Bklyn Nets',
+            color: 'lightgrey',
+            conf: 'e',
+            roster: [
+              { name: 'Kyrie Irving', shot: 7, type: 6, position: 'Shooting Guard', total: 0 },
+              { name: 'Joe Harris', shot: 5, type: 5, position: 'Power Forward', total: 0 },
+              { name: 'James Harden', shot: 9, type: 9, position: 'Point Guard', total: 0 },
+              { name: 'Kevin Durant', shot: 10, type: 10, position: 'Small Forward', total: 0 },
+              { name: 'DeAndre Jordan', shot: 6, type: 3, position: 'Center', total: 0 }
+            ]
+          }
+        };
+        const data = {
+          home: teams.u.roster,
+          visitor: teams.b.roster,
+          homeConf: teams.u.conf,
+          visitorConf: teams.b.conf
+        };
         let home = 0;
         let visitor = 0;
         let totalTime = 60;
         let ot = 0;
+        let teamPointer = 0;
 
         function loop() {
           let time = 0;
@@ -212,6 +246,11 @@
           renderOt();
         }
 
+        function renderTitle(title, color, teamType) {
+          el(`${teamType}Title`).style('color', color);
+          el(`${teamType}Title`).insert(title);
+        }
+
         function renderScore(id, score) {
           el(id).insert(score);
         }
@@ -236,10 +275,44 @@
         }
 
 				function events() {
+          const keys = {
+            n: 78,
+            l: 76,
+            d: 68,
+            u: 85,
+            b: 66
+          };
+
           document.addEventListener('keydown', (e) => {
             const key = e.keyCode;
+            console.log(key, e.key)
 
-            if (key === 78) {
+            if (key === keys.n) {
+              reset();
+              loop();
+            } else if (Object.values(keys).includes(key)) {
+              const team = e.key;
+              let teamType;
+
+              if (!teamPointer) {
+                teamType = 'home';
+                teamPointer = 1;
+              } else {
+                teamType = 'visitor';
+                teamPointer = 0;
+              }
+
+              data[teamType] = teams[team].roster;
+              data[`${teamType}Conf`] = teams[team].conf;
+
+              if (data.homeConf !== data.visitorConf) {
+                el('mainTitle').insert('NBA Finals');
+              } else {
+                el('mainTitle').insert('NBA Conf Finals');
+              }
+
+              renderTitle(teams[team].name, teams[team].color, teamType);
+
               reset();
               loop();
             }
@@ -254,7 +327,7 @@
 				return {
 					init
 				};
-			})(data).init();
+			})().init();
 		</script>
 	</body>
 </html>
